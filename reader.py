@@ -31,3 +31,12 @@ if __name__ == '__main__':
     for reviewer in data:
         print(data[reviewer][0][0])  # review of the 1st entry
         print(data[reviewer][0][1])  # scale of the 1st entry
+        
+
+        # all reviews from a reviewer
+        # reviews = [entry[0] for entry in data[reviewer]]
+        # print(reviews)
+
+        # all scales from a reviewer
+        # scales = [entry[1] for entry in data[reviewer]]
+        # print(scales)
