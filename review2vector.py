@@ -23,11 +23,11 @@ from sklearn.multiclass import OneVsRestClassifier, OneVsOneClassifier
 import numpy as np
 
 
-'''''加载数据集，切分数据集80%训练，20%测试'''
-movie_reviews = DataFrame.from_csv("/Users/lizy/Downloads/Q3/Information_Retrieval/project/data/train.tsv", sep="\t")
+# '''''加载数据集，切分数据集80%训练，20%测试'''
+# movie_reviews = DataFrame.from_csv("/Users/lizy/Downloads/Q3/Information_Retrieval/project/data/train.tsv", sep="\t")
 
 reviews = []
-with open("/Users/lizy/Downloads/Q3/Information_Retrieval/project/NLP_YSL/scaledata" + "/" + reviewFileName) as f:
+with open("./scaledata" + "/" + reviewFileName) as f:
     for line in f:
         reviews.append(line)
 

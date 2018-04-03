@@ -64,14 +64,14 @@ import numpy as np
 #     print(scales)
 
 reviews = []
-with open("/Users/lizy/Downloads/Q3/Information_Retrieval/project/NLP_YSL/scaledata/Steve+Rhodes/subj.Steve+Rhodes") as f:
+with open("./scaledata/Steve+Rhodes/subj.Steve+Rhodes") as f:
     for line in f:
         reviews.append(line)
 
 print(len(reviews))
 
 labels = []
-with open("/Users/lizy/Downloads/Q3/Information_Retrieval/project/NLP_YSL/scaledata/Steve+Rhodes/label.4class.Steve+Rhodes") as f:
+with open("./scaledata/Steve+Rhodes/label.4class.Steve+Rhodes") as f:
     for line in f:
         labels.append(line)
 
@@ -89,7 +89,7 @@ print(len(labels))
 
 #movie_reviews = load_files('endata')
 doc_terms_train, doc_terms_test, y_train, y_test \
-    = train_test_split(reviews, scales, test_size=0.3)
+    = train_test_split(reviews, labels, test_size=0.3)
 
 '''''BOOL型特征下的向量空间模型，注意，测试样本调用的是transform接口'''
 # unigram
