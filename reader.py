@@ -1,5 +1,3 @@
-#! pyhton3
-
 # structure data[reviewer] = [(review, scale), ...]
 # if path is not predefined, then search root file
 def readData(path = "./scaledata", scale = 3):
