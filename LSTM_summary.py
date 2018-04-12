@@ -16,6 +16,9 @@ from keras.models import Sequential
 from keras.layers import Dense, Activation, Embedding
 from keras.layers import LSTM
 
+import keras.backend.tensorflow_backend as KTF
+import tensorflow as tf
+
 import reader
 import summarize
 
@@ -25,21 +28,16 @@ if __name__ == "__main__":
     num_labels = 4
     reviewer = "Steve+Rhodes"
 
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
+    sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+    KTF.set_session(sess)
+
     data = reader.readData(scale=num_labels)
     reviews = [entry[0] for entry in data[reviewer]]
     # summaries = [summarize.summarizeContent(review, sentences_count=3) for review in reviews]
     raw_docs_train = reviews
-    # raw_docs_train = [summarize.firstSentence(review)[:20] for review in reviews]
+    # raw_docs_train = [summarize.firstSentence(review)[:10] for review in reviews]
     sentiment_train = [entry[1] for entry in data[reviewer]]
-
-    # # load data
-    # train_df = pd.read_csv('./kaggledata/train.tsv', sep='\t', header=0)
-
-    # print train_df
-
-    # raw_docs_train = train_df['Phrase'].values
-    # sentiment_train = train_df['Sentiment'].values
-    # num_labels = len(np.unique(sentiment_train))
 
     # print pd.value_counts(sentiment_train)
     # print num_labels
@@ -71,7 +69,7 @@ if __name__ == "__main__":
         word_id_len.append(len(word_ids))
 
     seq_len = np.round((np.mean(word_id_len) + 2 * np.std(word_id_len))).astype(int)
-
+    print("seq_len", seq_len)
     # pad sequences
     word_id_train = sequence.pad_sequences(np.array(word_id_train), maxlen=seq_len, padding='pre')
     y_train_enc = np_utils.to_categorical(sentiment_train, num_labels)
@@ -88,15 +86,15 @@ if __name__ == "__main__":
     model.add(Activation('softmax'))
 
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    model.fit(doc_terms_train, y_train, nb_epoch=3, batch_size=8, verbose=1)
+    model.fit(doc_terms_train, y_train, nb_epoch=3, batch_size=32, verbose=1)
 
     # Calculate the accuracy of testing data.
 
-    test_pred = model.predict_classes(doc_terms_test, batch_size=8)
+    test_pred = model.predict_classes(doc_terms_test, batch_size=32)
     # print (test_pred)
     test_pred = np_utils.to_categorical(test_pred, num_labels)
 
     print ("Accracy score:" + str(accuracy_score(test_pred, y_test)))
     print ("Confusion Matrix: ")
     print (confusion_matrix(test_pred.argmax(axis=1), y_test.argmax(axis=1)))
-    print(doc_terms_train)
+    # print(doc_terms_train)
