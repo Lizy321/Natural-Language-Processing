@@ -1,0 +1,10 @@
+
+*.xml
+*.xml
+*.iml
+*.pyc
+.vscode/launch.json
+.vscode/settings.json
+.vscode/launch.json
+.vscode/launch.json
+LSTM_ova.py
