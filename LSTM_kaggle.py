@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from gensim import corpora
 from nltk.corpus import stopwords
@@ -24,14 +25,13 @@ if __name__ == "__main__":
     # load data
     train_df = pd.read_csv('./kaggledata/train.tsv', sep='\t', header=0)
 
-    print train_df
-
     raw_docs_train = train_df['Phrase'].values
     sentiment_train = train_df['Sentiment'].values
     num_labels = len(np.unique(sentiment_train))
-
+    y_train_enc = np_utils.to_categorical(sentiment_train, num_labels)
     print pd.value_counts(sentiment_train)
     print num_labels
+    print "After categorical label amounts: " + str(len(np.unique(y_train_enc, axis=0)))
 
     # text pre-processing
     stop_words = set(stopwords.words('english'))
@@ -65,10 +65,9 @@ if __name__ == "__main__":
     # pad sequences
     print seq_len
     word_id_train = sequence.pad_sequences(np.array(word_id_train), maxlen=seq_len, padding='pre')
-    y_train_enc = np_utils.to_categorical(sentiment_train, num_labels)
 
     print word_id_train[0]
-    print word_id_train[len(word_id_train)-1]
+    print word_id_train[len(word_id_train) - 1]
     doc_terms_train, doc_terms_test, y_train, y_test \
         = train_test_split(word_id_train, y_train_enc, test_size=SPLIT_SIZE)
 
@@ -81,13 +80,36 @@ if __name__ == "__main__":
     model.add(Activation('softmax'))
 
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    model.fit(doc_terms_train, y_train, nb_epoch=3, batch_size=256, verbose=1)
+    history = model.fit(doc_terms_train, y_train, validation_split=0.33, nb_epoch=2, batch_size=64, verbose=1)
 
     # Calculate the accuracy of testing data.
+    # list all data in history
+    print(history.history.keys())
+    print(history.history['acc'])
+    print(history.history['val_acc'])
+    print(history.history['loss'])
+    print(history.history['val_loss'])
+    # summarize history for accuracy
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['training', 'validation'], loc='upper left')
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.savefig('./illustration/kaggle_acc.png')
+    plt.clf()
+    
+    # summarize history for loss
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['training', 'validation'], loc='upper left')
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.savefig('./illustration/kaggle_loss.png')
 
-    test_pred = model.predict_classes(doc_terms_test, batch_size=256)
+    test_pred = model.predict_classes(doc_terms_test, batch_size=64)
     print test_pred
     test_pred = np_utils.to_categorical(test_pred, num_labels)
+
 
     print "Accracy score:" + str(accuracy_score(test_pred, y_test))
     print "Confusion Matrix: "
